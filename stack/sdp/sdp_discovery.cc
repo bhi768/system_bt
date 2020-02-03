@@ -430,7 +430,12 @@ static void process_service_attr_rsp(tCONN_CB* p_ccb, uint8_t* p_reply,
     } else {
 #if (SDP_RAW_DATA_INCLUDED == TRUE)
       SDP_TRACE_WARNING("process_service_attr_rsp");
-      sdp_copy_raw_data(p_ccb, false);
+      if (!sdp_copy_raw_data(p_ccb, false)) {
+        SDP_TRACE_ERROR("sdp_copy_raw_data failed");
+        sdp_disconnect(p_ccb, SDP_ILLEGAL_PARAMETER);
+        return;
+      }
+
 #endif
 
       /* Save the response in the database. Stop on any error */
@@ -632,7 +637,11 @@ static void process_service_search_attr_rsp(tCONN_CB* p_ccb, uint8_t* p_reply,
 
 #if (SDP_RAW_DATA_INCLUDED == TRUE)
   SDP_TRACE_WARNING("process_service_search_attr_rsp");
-  sdp_copy_raw_data(p_ccb, true);
+  if (!sdp_copy_raw_data(p_ccb, true)) {
+    SDP_TRACE_ERROR("sdp_copy_raw_data failed");
+    sdp_disconnect(p_ccb, SDP_ILLEGAL_PARAMETER);
+    return;
+  }
 #endif
 
   p = &p_ccb->rsp_list[0];
